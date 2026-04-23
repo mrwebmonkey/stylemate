@@ -2,9 +2,10 @@ const HISTORY_KEY = "stylemate-history";
 const STREAK_KEY = "stylemate-streak";
 const PREFERENCE_KEY = "stylemate-preference";
 const SUGGESTION_KEY = "stylemate-suggestion";
+const THEME_KEY = "theme";
 
 const MAX_HISTORY = 7;
-const RECENT_OUTFIT_WINDOW = 4;
+const RECENT_OUTFIT_WINDOW = 5;
 
 const parseJson = (key, fallback) => {
   try {
@@ -53,6 +54,12 @@ export const getPreference = () => window.localStorage.getItem(PREFERENCE_KEY);
 
 export const savePreference = (preference) => {
   window.localStorage.setItem(PREFERENCE_KEY, preference);
+};
+
+export const getTheme = () => window.localStorage.getItem(THEME_KEY);
+
+export const saveTheme = (theme) => {
+  window.localStorage.setItem(THEME_KEY, theme);
 };
 
 export const getResolvedStreak = (date = new Date()) => {
