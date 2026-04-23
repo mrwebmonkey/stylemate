@@ -4,6 +4,7 @@ const PREFERENCE_KEY = "stylemate-preference";
 const SUGGESTION_KEY = "stylemate-suggestion";
 
 const MAX_HISTORY = 7;
+const RECENT_OUTFIT_WINDOW = 4;
 
 const parseJson = (key, fallback) => {
   try {
@@ -48,7 +49,7 @@ const getDayGap = (fromKey, toKey) => {
 
 export const getHistory = () => parseJson(HISTORY_KEY, []);
 
-export const getPreference = () => window.localStorage.getItem(PREFERENCE_KEY) || "casual";
+export const getPreference = () => window.localStorage.getItem(PREFERENCE_KEY);
 
 export const savePreference = (preference) => {
   window.localStorage.setItem(PREFERENCE_KEY, preference);
@@ -75,14 +76,28 @@ const saveStreak = (streak) => {
   saveJson(STREAK_KEY, streak);
 };
 
+const getRecentIds = (history) =>
+  new Set(history.slice(0, RECENT_OUTFIT_WINDOW).map((entry) => entry.id));
+
+const getBaseCandidates = ({ outfits, preference, excludeId }) => {
+  const withoutCurrent = outfits.filter((outfit) => outfit.id !== excludeId);
+
+  if (!preference) {
+    return withoutCurrent;
+  }
+
+  const preferred = withoutCurrent.filter((outfit) => outfit.tags.includes(preference));
+  return preferred.length > 0 ? preferred : withoutCurrent;
+};
+
 const scoreOutfit = ({ outfit, history, preference }) => {
   const historyIndex = history.findIndex((entry) => entry.id === outfit.id);
   const freshnessScore =
     historyIndex === -1
-      ? 2.3
-      : Math.max(0.35, (MAX_HISTORY - historyIndex) / MAX_HISTORY);
-  const preferenceBoost = outfit.tags.includes(preference) ? 1.15 : 0;
-  const varietyBoost = Math.random() * 0.75;
+      ? 3
+      : Math.max(0.2, (MAX_HISTORY - historyIndex - 1) / MAX_HISTORY);
+  const preferenceBoost = preference && outfit.tags.includes(preference) ? 1.4 : 0;
+  const varietyBoost = Math.random() * 0.45;
 
   return freshnessScore + preferenceBoost + varietyBoost;
 };
@@ -102,7 +117,10 @@ export const getOutfitNote = (outfit, history) => {
 };
 
 export const pickOutfit = ({ outfits, history, preference, excludeId = null }) => {
-  const candidates = outfits.filter((outfit) => outfit.id !== excludeId);
+  const baseCandidates = getBaseCandidates({ outfits, history, preference, excludeId });
+  const recentIds = getRecentIds(history);
+  const freshCandidates = baseCandidates.filter((outfit) => !recentIds.has(outfit.id));
+  const candidates = freshCandidates.length > 0 ? freshCandidates : baseCandidates;
   const ranked = [...candidates]
     .map((outfit) => ({
       outfit,
@@ -185,7 +203,11 @@ export const getInsightMessage = ({ outfits, history, preference }) => {
     return `Last time you picked ${lastLook.top.toLowerCase()}, so today leans into variety.`;
   }
 
-  return `Your ${preference} rotation is ready whenever you are.`;
+  if (preference) {
+    return `Your ${preference} rotation is ready whenever you are.`;
+  }
+
+  return "Pick your usual style once, and StyleMate will keep suggestions more relevant.";
 };
 
 export const getHistoryPreview = (history) => history.slice(0, 2);

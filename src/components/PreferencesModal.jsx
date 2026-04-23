@@ -4,7 +4,7 @@ const OPTIONS = [
   { value: "ethnic", label: "Ethnic", blurb: "Traditional-inspired outfits" },
 ];
 
-const PreferencesModal = ({ isOpen, preference, onClose, onSelect }) => {
+const PreferencesModal = ({ isOpen, isRequired = false, preference, onClose, onSelect }) => {
   if (!isOpen) {
     return null;
   }
@@ -15,15 +15,20 @@ const PreferencesModal = ({ isOpen, preference, onClose, onSelect }) => {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-clay">Preferences</p>
-            <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Bias your suggestions</h2>
+            <h2 className="mt-2 font-display text-2xl font-semibold text-ink">What do you usually wear?</h2>
+            <p className="mt-2 text-sm leading-6 text-ink/65">
+              We&apos;ll use this to keep your daily outfit suggestions more relevant.
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-ink/5 px-3 py-2 text-sm font-medium text-ink"
-          >
-            Close
-          </button>
+          {!isRequired && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full bg-ink/5 px-3 py-2 text-sm font-medium text-ink"
+            >
+              Close
+            </button>
+          )}
         </div>
 
         <div className="mt-5 grid gap-3">

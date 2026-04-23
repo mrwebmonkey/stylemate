@@ -39,7 +39,7 @@ function App() {
       preference: getPreference(),
     }),
   );
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(() => !getPreference());
   const [acceptedToday, setAcceptedToday] = useState(() => streak.lastAccepted === getTodayKey());
 
   const note = getOutfitNote(currentOutfit, history);
@@ -86,7 +86,7 @@ function App() {
         <Header
           dayLabel={formatDayLabel()}
           occasion="Daily Routine"
-          preference={preference}
+          preference={preference || "Set style"}
           onOpenPreferences={() => setIsPreferencesOpen(true)}
         />
 
@@ -103,6 +103,7 @@ function App() {
 
       <PreferencesModal
         isOpen={isPreferencesOpen}
+        isRequired={!preference}
         preference={preference}
         onClose={() => setIsPreferencesOpen(false)}
         onSelect={handlePreferenceChange}

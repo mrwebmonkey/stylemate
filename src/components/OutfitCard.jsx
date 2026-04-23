@@ -7,9 +7,15 @@ const OutfitLine = ({ label, value }) => (
 
 const OutfitCard = ({ outfit, note }) => {
   return (
-    <section className="surface p-6 sm:p-7">
+    <section className="surface overflow-hidden p-4 sm:p-5">
+      <img
+        src={outfit.image}
+        alt={`${outfit.top}, ${outfit.bottom}, ${outfit.footwear}`}
+        className="aspect-[4/5] w-full rounded-[24px] object-cover shadow-lg shadow-black/10"
+      />
+
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="pt-6">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-clay">
             Wear This Today
           </p>
@@ -18,7 +24,7 @@ const OutfitCard = ({ outfit, note }) => {
           </h1>
         </div>
 
-        <span className="rounded-full bg-moss/15 px-3 py-1 text-xs font-semibold text-moss">
+        <span className="mt-6 rounded-full bg-moss/15 px-3 py-1 text-xs font-semibold text-moss">
           {note}
         </span>
       </div>
